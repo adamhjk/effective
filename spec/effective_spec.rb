@@ -1,3 +1,21 @@
+#
+# Author: adam@opscode.com
+#
+# Copyright 2012, Opscode, Inc.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require File.expand_path(File.join(File.dirname(__FILE__), 'spec_helper'))
 
 describe "Effective" do
@@ -100,9 +118,34 @@ describe "Effective" do
     end
   end
 
+  describe "trigger" do
+    before(:each) do 
+      @e = Effective.new(1, 2)
+      @e.condition("truthy", lambda { true })
+      @e.trigger(:success, lambda { "woot" }) 
+    end
+
+    it "stores the trigger in the array for its success criteria" do
+      @e.triggers[:success][0].should be_a_kind_of(Proc)
+      @e.triggers[:success][0].call.should == "woot" 
+    end
+
+    it "raises an error if no block is provided" do
+      lambda { @e.trigger(:success) }.should raise_error(ArgumentError)
+    end
+
+    it "raises an error if the criteria is not :success, :failure or :any" do
+      lambda { @e.trigger(:success, lambda { "whee" }) }.should_not raise_error(ArgumentError)
+      lambda { @e.trigger(:failure, lambda { "whee" }) }.should_not raise_error(ArgumentError)
+      lambda { @e.trigger(:any, lambda { "whee" }) }.should_not raise_error(ArgumentError)
+      lambda { @e.trigger(:musicality, lambda { "whee" }) }.should raise_error(ArgumentError)
+    end
+  end
+
   describe "check" do
     before(:each) do
       @e = Effective.new(1, 2)
+      @e.no_sleep = true
       @e.condition("truthy", lambda { true })
       @e.condition("falsy", lambda { true })
     end
@@ -121,5 +164,35 @@ describe "Effective" do
       @e.should_receive(:evaluate).twice
       @e.check("and", 1, 0)
     end
+
+    it "should run the triggers on success" do
+      @pony = "foo"
+      @e.trigger(:failure, lambda { @pony = "baz" })
+      @e.trigger(:success, lambda { @pony = "bar" })
+      @e.check("and")
+      @pony.should == "bar"
+    end
+
+    it "should run the triggers on failure" do
+      @pony = "foo"
+      @e.trigger(:failure, lambda { @pony = "baz" })
+      @e.trigger(:success, lambda { @pony = "bar" })
+      @e.condition("false", lambda { false })
+      @e.check("and")
+      @pony.should == "baz"
+    end
+
+    it "should run the any triggers all the time" do
+      @pony = "foo"
+      @e.trigger(:any, lambda { @pony = "smee" })
+      @e.trigger(:failure, lambda { @pony = "baz" })
+      @e.trigger(:success, lambda { @pony = "bar" })
+      @e.check("and")
+      @pony.should == "smee"
+      @e.condition("false", lambda { false })
+      @e.check("and")
+      @pony.should == "smee"
+    end
   end
+
 end

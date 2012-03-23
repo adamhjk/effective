@@ -16,4 +16,6 @@ Gem::Specification.new do |gem|
   gem.version       = Effective::VERSION
   gem.add_development_dependency "rspec", "~> 2.8"
   gem.add_development_dependency "pry", "> 0"
+  gem.add_development_dependency "redcarpet", "> 0"
+  gem.add_development_dependency "yard", "> 0"
 end
