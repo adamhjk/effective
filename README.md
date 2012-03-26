@@ -38,6 +38,48 @@ puts result
 # Success, result == 2, because we are "or" not "and"-ing.
 ```
 
+## Inside Chef
+
+### Data Bag state_fantastic
+
+#### Data Bag Item "2005..."
+
+{
+  id: "2005..",
+  "data": {
+    ... # whatever # ..
+  },
+  "operator": "and",
+  "retry_count": 10,
+  "random_wait": 10,
+  "conditions": { 
+    "by fqdn" => {
+      "query" => "fqdn:* AND role:fantastic",
+      "attribute" => [ "fqdn" ]
+    }
+  }
+}
+
+### Environment Attributes
+
+default[:effective] = {
+  "state" => {
+    "fantastic" => {
+      "desired" => "2005..."
+    }
+  }
+}
+
+### Node Attributes
+
+default[:effective] = {
+  "state" => {
+    "fantastic" => {
+      "current" => "2004..." # ideally discovered by an attribute lookup
+    }
+  }
+}
+
 ## Contributing
 
 1. Fork it

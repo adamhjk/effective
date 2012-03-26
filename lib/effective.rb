@@ -21,7 +21,6 @@
 require "effective/version"
 
 class Effective
-  
 
   attr_accessor :current, :desired, :conditions, :triggers, :no_sleep
 
@@ -137,6 +136,7 @@ class Effective
     result = nil
     result_data = nil
     keep_going = 1 
+
     while keep_going > 0
       attempts += 1 
       keep_going = retry_count - attempts + 1 
@@ -148,6 +148,7 @@ class Effective
         sleep backoff_time unless no_sleep
       end
     end
+
     if result
       run_triggers(:success)
       return @desired, result_data
