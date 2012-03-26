@@ -44,10 +44,10 @@ puts result
 
 #### Data Bag Item "2005..."
 
+```javascript
 {
   id: "2005..",
   "data": {
-    ... # whatever # ..
   },
   "operator": "and",
   "retry_count": 10,
@@ -59,9 +59,11 @@ puts result
     }
   }
 }
+```
 
 ### Environment Attributes
 
+```ruby
 default[:effective] = {
   "state" => {
     "fantastic" => {
@@ -69,9 +71,10 @@ default[:effective] = {
     }
   }
 }
-
+```
 ### Node Attributes
 
+```ruby
 default[:effective] = {
   "state" => {
     "fantastic" => {
@@ -79,6 +82,7 @@ default[:effective] = {
     }
   }
 }
+```
 
 ## Contributing
 
